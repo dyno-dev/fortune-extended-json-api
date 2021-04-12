@@ -343,7 +343,7 @@ run((assert, comment) => {
     assert(~response.body.links.self.indexOf('/users'), 'link is correct')
     assert(deepEqual(
       response.body.data.map(record => record.attributes.name).sort(),
-      [ 'Jane Doe', 'John Doe' ]), 'match is correct')
+      [ 'Jane Doe', 'John Doe', 'Microsoft Bob' ]), 'match is correct')
   })
 })
 
