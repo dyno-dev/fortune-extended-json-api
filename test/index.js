@@ -54,6 +54,15 @@ const prefixTest = httpTest.bind(null, {
     ]
   ]
 })
+const relationshipDelimiterTest = httpTest.bind(null, {
+  serializers: [
+    [
+      jsonApi, {
+        relationshipDelimiter: '.'
+      }
+    ]
+  ]
+})
 
 
 run((assert, comment) => {
@@ -806,5 +815,130 @@ run((assert, comment) => {
       const value = response.body.links[key]
       assert(value.indexOf('https://') === 0, 'prefix is correct')
     }
+  })
+})
+
+run((assert, comment) => {
+  comment('get an array relationship entity')
+  return relationshipDelimiterTest( '/users/2/relationships/owned-pets',
+                                    null, response => {
+    assert(validate(response.body), 'response adheres to json api')
+    assert(response.status === 200, 'status is correct')
+    assert(~response.body.links.self
+      .indexOf('/users/2/relationships/owned-pets'),
+      'link is correct')
+    assert(deepEqual(response.body.data.map(data => data.id), [ 2, 3 ]),
+      'ids are correct')
+  })
+})
+
+
+run((assert, comment) => {
+  comment('get an empty array relationship entity')
+  return relationshipDelimiterTest( '/users/3/relationships/owned-pets',
+                                    null, response => {
+    assert(validate(response.body), 'response adheres to json api')
+    assert(response.status === 200, 'status is correct')
+    assert(~response.body.links.self
+      .indexOf('/users/3/relationships/owned-pets'),
+      'link is correct')
+    assert(deepEqual(response.body.data, []), 'data is correct')
+  })
+})
+
+
+run((assert, comment) => {
+  comment('get a singular relationship entity')
+  return relationshipDelimiterTest( '/users/1/relationships/spouse',
+                                    null, response => {
+    assert(validate(response.body), 'response adheres to json api')
+    assert(response.status === 200, 'status is correct')
+    assert(~response.body.links.self.indexOf('/users/1/relationships/spouse'),
+      'link is correct')
+    assert(response.body.data.type === 'users', 'type is correct')
+    assert(response.body.data.id === '2', 'id is correct')
+  })
+})
+
+
+run((assert, comment) => {
+  comment('get an empty singular relationship entity')
+  return relationshipDelimiterTest( '/users/3/relationships/spouse',
+                                    null, response => {
+    assert(validate(response.body), 'response adheres to json api')
+    assert(response.status === 200, 'status is correct')
+    assert(~response.body.links.self.indexOf('/users/3/relationships/spouse'),
+      'link is correct')
+    assert(response.body.data === null, 'data is correct')
+  })
+})
+
+
+run((assert, comment) => {
+  comment('update a singular relationship entity')
+  return relationshipDelimiterTest('/users/2/relationships/spouse', {
+    method: 'patch',
+    headers: { 'Content-Type': mediaType },
+    body: {
+      data: { type: 'users', id: 3 }
+    }
+  }, response => {
+    assert(response.status === 204, 'status is correct')
+  })
+})
+
+
+run((assert, comment) => {
+  comment('update a singular relationship entity with null')
+  return relationshipDelimiterTest('/users/2/relationships/spouse', {
+    method: 'patch',
+    headers: { 'Content-Type': mediaType },
+    body: {
+      data: null
+    }
+  }, response => {
+    assert(response.status === 204, 'status is correct')
+  })
+})
+
+
+run((assert, comment) => {
+  comment('update an array relationship entity')
+  return relationshipDelimiterTest('/users/1/relationships/owned-pets', {
+    method: 'patch',
+    headers: { 'Content-Type': mediaType },
+    body: {
+      data: [ { type: 'animals', id: 2 } ]
+    }
+  }, response => {
+    assert(response.status === 204, 'status is correct')
+  })
+})
+
+
+run((assert, comment) => {
+  comment('post to an array relationship entity')
+  return relationshipDelimiterTest('/users/1/relationships/owned-pets', {
+    method: 'post',
+    headers: { 'Content-Type': mediaType },
+    body: {
+      data: [ { type: 'animals', id: 2 } ]
+    }
+  }, response => {
+    assert(response.status === 204, 'status is correct')
+  })
+})
+
+
+run((assert, comment) => {
+  comment('delete from an array relationship entity')
+  return relationshipDelimiterTest('/users/1/relationships/friends', {
+    method: 'delete',
+    headers: { 'Content-Type': mediaType },
+    body: {
+      data: [ { type: 'users', id: 3 } ]
+    }
+  }, response => {
+    assert(response.status === 204, 'status is correct')
   })
 })
