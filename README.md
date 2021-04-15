@@ -48,6 +48,7 @@ The `options` object is as follows:
 - `jsonapi`: top-level object mainly used for describing version. Default: `{ version: '1.0' }`.
 - `castNumericIds`: whether to cast numeric id strings to numbers. Default: `true`.
 - `relationshipDelimiter`: how to detect a relationship field / filter. Default: `:`.
+- `allowRelationshipFilters`: allows more than fuzzy match filters for realtionships. Default: `false`
 
 Internal options:
 
