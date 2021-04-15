@@ -10,29 +10,30 @@ This is a [JSON API](http://jsonapi.org) serializer for [Fortune.js](http://fort
 $ npm install fortune fortune-http fortune-json-api
 ```
 
-
 ## Usage
 
 ```js
-const http = require('http')
-const fortune = require('fortune')
-const fortuneHTTP = require('fortune-http')
-const jsonApiSerializer = require('fortune-json-api')
+const http = require("http");
+const fortune = require("fortune");
+const fortuneHTTP = require("fortune-http");
+const jsonApiSerializer = require("fortune-json-api");
 
 // `instance` is an instance of Fortune.js.
 const listener = fortuneHTTP(instance, {
   serializers: [
     // The `options` object here is optional.
-    [ jsonApiSerializer, options ]
-  ]
-})
+    [jsonApiSerializer, options],
+  ],
+});
 // The listener function may be used as a standalone server, or
 // may be composed as part of a framework.
 const server = http.createServer((request, response) =>
-  listener(request, response)
-  .catch(error => { /* error logging */ }))
+  listener(request, response).catch((error) => {
+    /* error logging */
+  })
+);
 
-server.listen(8080)
+server.listen(8080);
 ```
 
 The `options` object is as follows:
@@ -46,12 +47,12 @@ The `options` object is as follows:
 - `jsonSpaces`: how many spaces to use for pretty printing JSON. Default: `2`.
 - `jsonapi`: top-level object mainly used for describing version. Default: `{ version: '1.0' }`.
 - `castNumericIds`: whether to cast numeric id strings to numbers. Default: `true`.
+- `relationshipDelimiter`: how to detect a relationship field / filter. Default: `:`.
 
 Internal options:
 
 - `uriTemplate`: URI template string.
 - `allowLevel`: HTTP methods to allow ordered by appearance in URI template.
-
 
 ## License
 
